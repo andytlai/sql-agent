@@ -1,27 +1,20 @@
+from langchain.agents import create_sql_agent 
+from langchain.agents.agent_toolkits import SQLDatabaseToolkit 
+from langchain.sql_database import SQLDatabase 
+from langchain.llms.openai import OpenAI 
+from langchain.agents import AgentExecutor 
 from langchain.agents.agent_types import AgentType
-from langchain_experimental.agents.agent_toolkits import create_csv_agent
-from langchain_openai import ChatOpenAI, OpenAI
+from langchain.chat_models import ChatOpenAI
 
-def read_most_recent_rows_from_csv(number_of_tweets, ticker_symbol):
-    agent = create_csv_agent(
-        OpenAI(temperature=0),
-        'assets/tweets.csv',
-        verbose=True,
-        agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-    )
+def execute_query(query):
+    sqlite_path = "/kaggle/input/24169-pitchfork-reviews/data.sqlite3"
+    sqlite_uri = f"sqlite:///{sqlite_path}"
+    db = SQLDatabase.from_uri("sqlite:///Chinook.db")
 
-    #agent.run("how many rows are there?")
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+    agent_executor = create_sql_agent(llm, db=db, agent_type="openai-tools", verbose=True)
 
-    #agent.run("What are the 3 tweets with the largest timestamp values?")
-
-    # Use format method to insert the variable into the string
-    query = "Find the 'Tweet Content' of {} tweets with the largest timestamp values where 'Ticker Symbol' is {}? Return the result as a string array".format(number_of_tweets, ticker_symbol)
-
-    # Run the query
-    result = agent.run(query)
-
-    # Print the result
-    print(result)
+    result = agent_executor.invoke("Execute the given query {}", query)
 
     # Return the twitter content of each of these n rows
     return result
