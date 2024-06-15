@@ -6,7 +6,7 @@ from langchain.agents import AgentExecutor
 from langchain.agents.agent_types import AgentType
 from langchain.chat_models import ChatOpenAI
 
-def execute_query(query):
+def execute_query(input):
     sqlite_path = "/kaggle/input/24169-pitchfork-reviews/data.sqlite3"
     sqlite_uri = f"sqlite:///{sqlite_path}"
     db = SQLDatabase.from_uri("sqlite:///Chinook.db")
@@ -14,7 +14,8 @@ def execute_query(query):
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
     agent_executor = create_sql_agent(llm, db=db, agent_type="openai-tools", verbose=True)
 
-    result = agent_executor.invoke("Execute the given query {}", query)
+    query = "Execute the given query {}".format(input)
+    result = agent_executor.invoke(query)
 
     # Return the twitter content of each of these n rows
     return result
