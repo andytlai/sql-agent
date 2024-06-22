@@ -7,8 +7,8 @@ import toml
 def load_prompt():
     template =  """Generate a unique fantasy story with characters for a SQL game to teach users how to learn SQL in an interactive way. The story should generate at least 5 tables related to the story with at least 10 rows of data for each table related to the story that can be used to ask different levels of complex SQL questions about the data by joining data from multiple tables . Generate the DDL and DML statements for the data.
 
-    Return the output into three files:
-    story.txt contains the unique fantasy story
+    Return the output into a json with a separate key for each type and an array for each line of the output which is a string for each type.  Make sure there is a semicolon to terminate each line of the SQL statements.
+    story.txt contains the story text
     story.ddl contains the CREATE TABLE statements
     story.dml contains the INSERT statements
     
