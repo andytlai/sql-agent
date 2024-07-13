@@ -13,6 +13,7 @@ from langchain_core.prompts.chat import (
 from story_agent import *
 import json
 import toml
+import sqlite3
 
 def execute_query(input):
     secrets = toml.load(".streamlit/secrets.toml")
@@ -49,7 +50,17 @@ def execute_query(input):
     # Return the twitter content of each of these n rows
     return result
 
+def execute_ddl_dml(ddl, dml):
+    connection = sqlite3.connect("Chinook.db")
 
+    cursor = connection.cursor()
+
+    for item in ddl:
+      cursor.execute(item)
+
+    for item in dml:
+      cursor.execute(item)    
+    
 def main():
 
 
@@ -60,23 +71,9 @@ def main():
     print(answer)
     data = json.loads(answer)
     print(data['ddl'])
+    print(data['dml'])
 
-    query_string = ''
-
-   # Loop through each item in the array
-    for item in data['ddl']:
-   # Append each item followed by a newline character to the result string
-      query_string += item + '\n'
-      execute_query(item)
-
-    for item in data['dml']:
-   # Append each item followed by a newline character to the result string
-      query_string += item + '\n'
-      execute_query(item)
-
-    print(query_string)
-
-    #execute_query(query_string)
+    execute_ddl_dml(data['ddl'], data['dml'])
 
 if __name__ == "__main__":
     main()
