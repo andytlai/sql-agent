@@ -10,13 +10,18 @@ from langchain_core.prompts.chat import (
     HumanMessagePromptTemplate,
     MessagesPlaceholder,
 )
+from story_agent import *
+import json
+import toml
 
 def execute_query(input):
+    secrets = toml.load(".streamlit/secrets.toml")
+
     sqlite_path = "/kaggle/input/24169-pitchfork-reviews/data.sqlite3"
     sqlite_uri = f"sqlite:///{sqlite_path}"
     db = SQLDatabase.from_uri("sqlite:///Chinook.db")
 
-    toolkit = SQLDatabaseToolkit(db=db, llm=ChatOpenAI(temperature=0))
+    toolkit = SQLDatabaseToolkit(db=db, llm=ChatOpenAI(temperature=0, openai_api_key= secrets["OPENAI_API_KEY"]))
     context = toolkit.get_context()
     tools = toolkit.get_tools()
 
@@ -29,7 +34,7 @@ def execute_query(input):
     prompt = ChatPromptTemplate.from_messages(messages)
     prompt = prompt.partial(**context)
 
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key= secrets["OPENAI_API_KEY"])
 
     agent = create_openai_tools_agent(llm, tools, prompt)
 
@@ -43,3 +48,35 @@ def execute_query(input):
 
     # Return the twitter content of each of these n rows
     return result
+
+
+def main():
+
+
+    """
+    This is the main function of the script.
+    """
+    answer = get_data()
+    print(answer)
+    data = json.loads(answer)
+    print(data['ddl'])
+
+    query_string = ''
+
+   # Loop through each item in the array
+    for item in data['ddl']:
+   # Append each item followed by a newline character to the result string
+      query_string += item + '\n'
+      execute_query(item)
+
+    for item in data['dml']:
+   # Append each item followed by a newline character to the result string
+      query_string += item + '\n'
+      execute_query(item)
+
+    print(query_string)
+
+    #execute_query(query_string)
+
+if __name__ == "__main__":
+    main()
