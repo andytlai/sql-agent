@@ -2,3 +2,5 @@
 /__pycache__
 /.streamlit/secrets.toml
 /myenv
+/sql-agent
+/agents/__pycache__
