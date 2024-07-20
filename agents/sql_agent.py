@@ -17,9 +17,6 @@ import sqlite3
 
 def execute_query(input):
     secrets = toml.load(".streamlit/secrets.toml")
-
-    sqlite_path = "/kaggle/input/24169-pitchfork-reviews/data.sqlite3"
-    sqlite_uri = f"sqlite:///{sqlite_path}"
     db = SQLDatabase.from_uri("sqlite:///Chinook.db")
 
     toolkit = SQLDatabaseToolkit(db=db, llm=ChatOpenAI(temperature=0, openai_api_key= secrets["OPENAI_API_KEY"]))
@@ -59,7 +56,8 @@ def execute_ddl_dml(ddl, dml):
       cursor.execute(item)
 
     for item in dml:
-      cursor.execute(item)    
+      cursor.execute(item)
+      connection.commit()    
     
 def main():
 
@@ -70,10 +68,10 @@ def main():
     answer = get_data()
     print(answer)
     data = json.loads(answer)
-    print(data['ddl'])
-    print(data['dml'])
+    print(data['story.ddl'])
+    print(data['story.dml'])
 
-    execute_ddl_dml(data['ddl'], data['dml'])
+    execute_ddl_dml(data['story.ddl'], data['story.dml'])
 
 if __name__ == "__main__":
     main()
