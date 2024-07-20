@@ -11,11 +11,12 @@ from langchain_core.prompts.chat import (
     MessagesPlaceholder,
 )
 from story_agent import *
+from question_agent import *
 import json
 import toml
 import sqlite3
 
-def execute_query(input):
+def execute_query_via_agent(input):
     secrets = toml.load(".streamlit/secrets.toml")
     db = SQLDatabase.from_uri("sqlite:///Chinook.db")
 
@@ -61,17 +62,20 @@ def execute_ddl_dml(ddl, dml):
     
 def main():
 
-
     """
     This is the main function of the script.
     """
-    answer = get_data()
+    answer = get_simulated_data()
     print(answer)
-    data = json.loads(answer)
-    print(data['story.ddl'])
-    print(data['story.dml'])
+    story, ddl, dml = get_story_ddl_dml(answer)
 
-    execute_ddl_dml(data['story.ddl'], data['story.dml'])
+    execute_ddl_dml(ddl, dml)
+
+    easy_question = ask_question(ddl, story, "Give me an easy level SQL question")
+    print(easy_question)
+    question, difficulty = get_query_difficulty(easy_question)
+
+    print(execute_query_via_agent(question))
 
 if __name__ == "__main__":
     main()

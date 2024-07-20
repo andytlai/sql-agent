@@ -6,7 +6,7 @@ from langchain.schema.runnable import RunnableMap
 import toml
 import json
 import uuid
-
+from story_agent import *
 
 def load_question_prompt(ddl,story):
     # print("DEBUG")
@@ -46,53 +46,17 @@ def ask_question(ddl,story,question):
     response = chain.invoke({'question': question})
     return response.content
 
-def get_story_and_ddl(data):
-    #print("debug1")
-    story = data.get("story.txt", [])
-   # print("debug2")
-    ddl = data.get("story.ddl", [])
-   # print("debug3")
-    return story, ddl
+def get_query_difficulty(answer):
+    data = json.loads(answer)
+    question = data.get("question", [])
+    difficulty = data.get("difficulty", [])
+    return question, difficulty
 
 def main():
 
-    answer = """{
- "story.txt": [
-    "In the land of SQLoria, there are five powerful houses that govern the realm, each specializing in a different aspect of data manipulation.",
-    "1. House Query: Known for their expertise in writing complex SQL queries and unraveling data mysteries.",
-    "2. House Join: Masters of joining tables together to combine information and uncover hidden connections.",
-    "3. House Index: Keepers of the indexes, they ensure quick data retrieval and efficient query performance.",
-    "4. House Transaction: Guardians of data integrity, they oversee all transactions and maintain the database's consistency.",
-    "5. House Backup: Protectors of data security, they store backups and ensure the realm's information is safe from harm."
-  ],
-  "story.ddl": [
-    "CREATE TABLE house_query (id INT PRIMARY KEY, name VARCHAR(50), specialty VARCHAR(100));",
-    "CREATE TABLE house_join (id INT PRIMARY KEY, name VARCHAR(50), specialty VARCHAR(100));",
-    "CREATE TABLE house_index (id INT PRIMARY KEY, name VARCHAR(50), specialty VARCHAR(100));",
-    "CREATE TABLE house_transaction (id INT PRIMARY KEY, name VARCHAR(50), specialty VARCHAR(100));",
-    "CREATE TABLE house_backup (id INT PRIMARY KEY, name VARCHAR(50), specialty VARCHAR(100));"
-  ],
-  "story.dml": [
-    "INSERT INTO house_query (id, name, specialty) VALUES (1, 'House Query', 'Writing complex SQL queries');",
-    "INSERT INTO house_query (id, name, specialty) VALUES (2, 'House Query', 'Analyzing data patterns');",
-    "INSERT INTO house_query (id, name, specialty) VALUES (3, 'House Query', 'Optimizing query performance');",
-    "INSERT INTO house_join (id, name, specialty) VALUES (1, 'House Join', 'Mastering table joins');",
-    "INSERT INTO house_join (id, name, specialty) VALUES (2, 'House Join', 'Combining data from multiple sources');",
-    "INSERT INTO house_join (id, name, specialty) VALUES (3, 'House Join', 'Identifying relationships between tables');",
-    "INSERT INTO house_index (id, name, specialty) VALUES (1, 'House Index', 'Creating efficient indexes');",
-    "INSERT INTO house_index (id, name, specialty) VALUES (2, 'House Index', 'Optimizing data retrieval');",
-    "INSERT INTO house_index (id, name, specialty) VALUES (3, 'House Index', 'Maintaining index integrity');",
-    "INSERT INTO house_transaction (id, name, specialty) VALUES (1, 'House Transaction', 'Ensuring data consistency');",
-    "INSERT INTO house_transaction (id, name, specialty) VALUES (2, 'House Transaction', 'Managing database locks');",
-    "INSERT INTO house_transaction (id, name, specialty) VALUES (3, 'House Transaction', 'Rolling back failed transactions');",
-    "INSERT INTO house_backup (id, name, specialty) VALUES (1, 'House Backup', 'Storing secure backups');",
-    "INSERT INTO house_backup (id, name, specialty) VALUES (2, 'House Backup', 'Implementing disaster recovery plans');",
-    "INSERT INTO house_backup (id, name, specialty) VALUES (3, 'House Backup', 'Encrypting sensitive data during backups');"
-  ]
-}"""
-
-    data = json.loads(answer)
-    story, ddl = get_story_and_ddl(data)
+    answer = get_simulated_data()
+    print(answer)
+    story, ddl, dml = get_story_ddl_dml(answer)
 
     # Print the story and DDL
     print("Story:")
@@ -102,19 +66,19 @@ def main():
     
     print("")
     print("easy question")
-    easy_question = ask_question(ddl,story,"Give me an easy level SQL question")
+    easy_question = ask_question(ddl, story, "Give me an easy level SQL question")
 
     print(easy_question)
 
     print("")
     print("medium question")
-    hard_question = ask_question(ddl,story,"Give me a medium level SQL question")
+    hard_question = ask_question(ddl, story, "Give me a medium level SQL question")
     print(hard_question)
 
 
     print("")
     print("hard question")
-    hard_question = ask_question(ddl,story,"Give me a really hard level SQL question")
+    hard_question = ask_question(ddl, story, "Give me a really hard level SQL question")
     print(hard_question)
 
 if __name__ == "__main__":
