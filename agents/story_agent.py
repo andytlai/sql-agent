@@ -130,44 +130,10 @@ def main():
     This is the main function of the script.
     """
     answer = get_data()
-    answer2 = """{
-  "story": [
-    "In the realm of SQLandia, there existed a powerful wizard named Querymaster. Querymaster was known far and wide for his ability to harness the magic of SQL to solve any problem that came his way.",
-    "One day, a group of adventurers arrived at Querymaster's tower seeking his help. They had heard of his legendary SQL skills and hoped he could assist them in their quest to retrieve a rare artifact known as the Crystal of Aggregation.",
-    "The adventurers explained that the Crystal of Aggregation was said to hold immense power, but it had been lost for centuries in the depths of the Dark Database. They needed Querymaster's expertise to navigate the treacherous data structures and retrieve the crystal.",
-    "Querymaster agreed to help the adventurers, knowing that the journey ahead would not be easy. He gathered his trusty companions - a brave knight named Joiner, a cunning rogue named Filterella, and a wise cleric named Indexia.",
-    "Together, the party set out on their quest, facing challenges such as nested queries, complex joins, and tricky subqueries. But with Querymaster leading the way, they were able to overcome each obstacle with the power of SQL.",
-    "After many trials and tribulations, the party finally reached the heart of the Dark Database where the Crystal of Aggregation lay hidden. Using a combination of SELECT statements and WHERE clauses, they were able to locate the crystal and retrieve it safely.",
-    "As they emerged from the depths of the database, the adventurers thanked Querymaster for his invaluable assistance. The wizard smiled, knowing that he had once again used the magic of SQL to help others in need.",
-    "And so, the party returned to the realm of SQLandia as heroes, their names forever etched in the annals of database history."
-  ],
-  "ddl": [
-    "CREATE TABLE adventurers (id INT, name VARCHAR(50), class VARCHAR(50));",
-    "CREATE TABLE challenges (id INT, description VARCHAR(100), difficulty VARCHAR(50));",
-    "CREATE TABLE party (id INT, member_id INT, role VARCHAR(50));",
-    "CREATE TABLE artifacts (id INT, name VARCHAR(50), power VARCHAR(50));",
-    "CREATE TABLE locations (id INT, name VARCHAR(50), type VARCHAR(50));"
-  ],
-  "dml": [
-    "INSERT INTO adventurers (id, name, class) VALUES (1, 'Querymaster', 'Wizard');",
-    "INSERT INTO adventurers (id, name, class) VALUES (2, 'Joiner', 'Knight');",
-    "INSERT INTO adventurers (id, name, class) VALUES (3, 'Filterella', 'Rogue');",
-    "INSERT INTO adventurers (id, name, class) VALUES (4, 'Indexia', 'Cleric');",
-    "INSERT INTO challenges (id, description, difficulty) VALUES (1, 'Nested queries', 'Hard');",
-    "INSERT INTO challenges (id, description, difficulty) VALUES (2, 'Complex joins', 'Medium');",
-    "INSERT INTO challenges (id, description, difficulty) VALUES (3, 'Subqueries', 'Difficult');",
-    "INSERT INTO party (id, member_id, role) VALUES (1, 1, 'Leader');",
-    "INSERT INTO party (id, member_id, role) VALUES (2, 2, 'Fighter');",
-    "INSERT INTO party (id, member_id, role) VALUES (3, 3, 'Scout');",
-    "INSERT INTO party (id, member_id, role) VALUES (4, 4, 'Healer');",
-    "INSERT INTO artifacts (id, name, power) VALUES (1, 'Crystal of Aggregation', 'Aggregation');",
-    "INSERT INTO locations (id, name, type) VALUES (1, 'Dark Database', 'Dungeon');",
-    "INSERT INTO locations (id, name, type) VALUES (2, 'SQLandia', 'Realm')"
-  ]
-}"""
+ 
     print(answer)
-    data = json.loads(answer)
-    story, ddl = get_story_and_ddl(data)
+
+    story, ddl, dml = get_story_ddl_dml(answer)
 
     # Print the story and DDL
     print("Story:")
@@ -177,4 +143,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
