@@ -13,7 +13,8 @@ def load_question_prompt(ddl,story):
     template =  f"""You are a SQL tutor, given the ddl : {ddl} and story : {story} generate a question about the given story and specified
 difficulty level (easy, medium, or hard) for the student to write a SQL query for the given ddl for the question you provide.  
 
-Return the output json format with the key as 'question' and the value is the actual question generated, and another key is the 'difficulty' level with value as 'easy', 'medium', or 'hard' based on the difficulty level of the question.
+Return the output json format with the key as 'question' and the value is the actual question generated, and another key is the 'difficulty' level with value as 'easy', 'medium', or 'hard' based on the difficulty level of the question. 
+The final key should be 'sql' containing the expected SQL SELECT statement for the 'question'.
 Difficulty Levels:
 
 easy: Simple SELECT statements with basic conditions. These should involve one or two tables with straightforward WHERE clauses.
