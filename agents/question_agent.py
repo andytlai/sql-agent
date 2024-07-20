@@ -51,7 +51,8 @@ def get_query_difficulty(answer):
     data = json.loads(answer)
     question = data.get("question", [])
     difficulty = data.get("difficulty", [])
-    return question, difficulty
+    sql = data.get("sql", [])
+    return question, difficulty, sql
 
 def main():
 

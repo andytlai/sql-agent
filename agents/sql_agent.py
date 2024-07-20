@@ -58,7 +58,16 @@ def execute_ddl_dml(ddl, dml):
 
     for item in dml:
       cursor.execute(item)
-      connection.commit()    
+      connection.commit()   
+
+def execute_query(query):
+    connection = sqlite3.connect("Chinook.db")
+    cursor = connection.cursor()
+    cursor.execute(query)
+    
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
     
 def main():
 
@@ -73,9 +82,10 @@ def main():
 
     easy_question = ask_question(ddl, story, "Give me an easy level SQL question")
     print(easy_question)
-    question, difficulty = get_query_difficulty(easy_question)
+    question, difficulty, sql = get_query_difficulty(easy_question)
 
     print(execute_query_via_agent(question))
+    print(execute_query(sql))
 
 if __name__ == "__main__":
     main()
