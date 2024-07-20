@@ -45,7 +45,7 @@ Ensure each SQL statement is terminated with a semicolon.
 def load_question_prompt(ddl,story):
     # print("DEBUG")
     template =  f"""You are a SQL tutor, given the ddl : {ddl} and story : {story} generate a question about the given story and specified
-difficulty level (easy, medium, and hard) for the student to write a SQL query for the given ddl for the question you provide.   Also give the recommended SELECT 
+difficulty level (easy, medium, or hard) for the student to write a SQL query for the given ddl for the question you provide.   Also give the recommended SELECT 
 statement for the generated question for validation.
 
 Difficulty Levels:
@@ -76,17 +76,6 @@ def get_data():
 
     chain = prompt | chat_model
     response = chain.invoke({})
-    return response.content
-
-def ask_question(ddl,story,question):
-    # Generate the answer by calling OpenAI's Chat Model
-    chat_model = load_chat_model()
-    prompt = load_question_prompt(ddl,story)
-    inputs = RunnableMap({
-        'question': lambda x: x['question']
-    })
-    chain = inputs | prompt | chat_model
-    response = chain.invoke({'question': question})
     return response.content
 
 def get_story_and_ddl(data):
@@ -148,23 +137,6 @@ def main():
     for paragraph in story:
         print(paragraph)
         print()
-    
-    print("")
-    print("easy question")
-    easy_question = ask_question(ddl,story,"give me an easy question")
-
-    print(easy_question)
-
-    print("")
-    print("medium question")
-    hard_question = ask_question(ddl,story,"give me a really medium level question")
-    print(hard_question)
-
-
-    print("")
-    print("hard question")
-    hard_question = ask_question(ddl,story,"give me a really hard question")
-    print(hard_question)
 
 if __name__ == "__main__":
     main()
