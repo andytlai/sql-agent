@@ -61,13 +61,13 @@ def execute_query(query):
     
 def main():
     print ('argument list', sys.argv)
-    use_existing_schema = bool(sys.argv[1])
+    #use_existing_schema = bool(sys.argv[1])
 
-    if use_existing_schema:
-       question = "List the total sales per country. Which country's customers spent the most?" 
-       print(question)
-       print(execute_query_via_agent(question))
-       return
+    #if use_existing_schema:
+    #   question = "List the total sales per country. Which country's customers spent the most?" 
+    #   print(question)
+    #   print(execute_query_via_agent(question))
+    #   return
 
     """
     This is the main function of the script.
@@ -78,8 +78,7 @@ def main():
 
     execute_ddl_dml(ddl, dml)
 
-    easy_question = ask_question(ddl, story, "Give me an easy level SQL question")
-    "List the total sales per country. Which country's customers spent the most?" 
+    easy_question = ask_question(ddl, story, dml, "Give me an medium level SQL question")
     print(easy_question)
     question, difficulty, sql = get_query_difficulty(easy_question)
 
