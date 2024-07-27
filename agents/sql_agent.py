@@ -1,49 +1,39 @@
-from langchain.agents.agent_toolkits import SQLDatabaseToolkit 
+from langchain.agents.agent_toolkits import SQLDatabaseToolkit, create_sql_agent 
 from langchain.sql_database import SQLDatabase 
-from langchain.agents import AgentExecutor 
 from langchain.chat_models import ChatOpenAI
-from langchain.agents import create_openai_tools_agent
-from langchain_community.agent_toolkits.sql.prompt import SQL_FUNCTIONS_SUFFIX
-from langchain_core.messages import AIMessage, SystemMessage
-from langchain_core.prompts.chat import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-)
+from langchain.callbacks.base import BaseCallbackHandler
 from story_agent import *
 from question_agent import *
 import json
 import toml
 import sqlite3
+import sys
+
+class SQLHandler(BaseCallbackHandler):
+    def __init__(self):
+        print("ESTOOO")
+        self.sql_result = None
+
+    def on_agent_action(self, action, **kwargs):
+        """Run on agent action. if the tool being used is sql_db_query,
+         it means we're submitting the sql and we can 
+         record it as the final sql"""
+
+        if action.tool == "sql_db_query":
+            self.sql_result = action.tool_input
 
 def execute_query_via_agent(input):
     secrets = toml.load(".streamlit/secrets.toml")
     db = SQLDatabase.from_uri("sqlite:///Chinook.db")
-
-    toolkit = SQLDatabaseToolkit(db=db, llm=ChatOpenAI(temperature=0, openai_api_key= secrets["OPENAI_API_KEY"]))
-    context = toolkit.get_context()
-    tools = toolkit.get_tools()
-
-    messages = [
-       HumanMessagePromptTemplate.from_template("{input}"),
-       AIMessage(content=SQL_FUNCTIONS_SUFFIX),
-       MessagesPlaceholder(variable_name="agent_scratchpad"),
-    ]
-
-    prompt = ChatPromptTemplate.from_messages(messages)
-    prompt = prompt.partial(**context)
-
+    
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, openai_api_key= secrets["OPENAI_API_KEY"])
+    agent_executor = create_sql_agent(llm, db=db, agent_type="openai-tools", verbose=True)
 
-    agent = create_openai_tools_agent(llm, tools, prompt)
+    handler = SQLHandler()
+    result = agent_executor.invoke({"input": input}, {"callbacks": [handler]})['output']
 
-    agent_executor = AgentExecutor(
-       agent=agent,
-       tools=toolkit.get_tools(),
-       verbose=True,
-    )
-
-    result = agent_executor.invoke({"input": input})
+    print('query run: ')
+    print(handler.sql_result)
 
     # Return the twitter content of each of these n rows
     return result
@@ -64,12 +54,20 @@ def execute_query(query):
     connection = sqlite3.connect("Chinook.db")
     cursor = connection.cursor()
     cursor.execute(query)
-    
+
     rows = cursor.fetchall()
     for row in rows:
         print(row)
     
 def main():
+    print ('argument list', sys.argv)
+    use_existing_schema = bool(sys.argv[1])
+
+    if use_existing_schema:
+       question = "List the total sales per country. Which country's customers spent the most?" 
+       print(question)
+       print(execute_query_via_agent(question))
+       return
 
     """
     This is the main function of the script.
@@ -81,6 +79,7 @@ def main():
     execute_ddl_dml(ddl, dml)
 
     easy_question = ask_question(ddl, story, "Give me an easy level SQL question")
+    "List the total sales per country. Which country's customers spent the most?" 
     print(easy_question)
     question, difficulty, sql = get_query_difficulty(easy_question)
 
